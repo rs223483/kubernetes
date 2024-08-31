@@ -1,5 +1,5 @@
 ## Create image
-` docker build --no-cache --platform=linux/amd64 -t ttl.sh/saiyam/demo:10h .   `
+` docker build --no-cache --platform=linux/amd64 -t ttl.sh/rs223483/demo:10h .   `
 ## Install cloudnative PG
 ```
 kubectl apply --server-side -f \

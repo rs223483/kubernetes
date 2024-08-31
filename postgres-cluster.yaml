@@ -2,7 +2,7 @@ apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
   name: my-postgresql
-  namespace: default
+  namespace: demoproject
 spec:
   instances: 3
   storage:

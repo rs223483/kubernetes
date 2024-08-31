@@ -1,7 +1,7 @@
-~apiVersion: v1
+apiVersion: v1
 kind: Namespace
 metadata:
   creationTimestamp: null
-  name: project
+  name: demoproject
 spec: 
 status: {}

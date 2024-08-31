@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: my-app
+  namespace: demoproject
 spec:
   replicas: 1
   selector:
@@ -14,7 +15,7 @@ spec:
     spec:
       containers:
       - name: my-app
-        image: ttl.sh/kubesimplify/app:10h
+        image: ttl.sh/rs223483/demo:10h
         imagePullPolicy: Always
         env:
         - name: DB_USERNAME

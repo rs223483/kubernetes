@@ -1,6 +1,9 @@
 # Use an official Python runtime as a parent image
 FROM python:3.9-slim
 
+# install curl package
+RUN apt-get update && apt-get install -y curl
+
 # Set the working directory in the container
 WORKDIR /app
 

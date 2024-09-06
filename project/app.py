@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 import psycopg2
 from psycopg2 import sql, Error
+from prometheus_client import start_http_server, Summary, generate_latest
 import os
 
 app = Flask(__name__)
@@ -62,6 +63,11 @@ def remove_goal():
 @app.route('/health', methods=['GET'])
 def health_check():
     return "OK", 200
+
+@app.route('/metrics')
+def metrics():
+    return generate_latest()
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)

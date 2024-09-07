@@ -66,9 +66,10 @@ def health_check():
 
 @app.route('/metrics')
 def metrics():
-    return generate_latest()
+    return generate_latest(REGISTRY), 200, {'Content-Type': 'text/plain'}
 
 
 if __name__ == '__main__':
+    start_http_server(8000)
     app.run(host='0.0.0.0', port=8080)
 

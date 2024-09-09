@@ -1,9 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for
 import psycopg2
 from psycopg2 import sql, Error
-from prometheus_client import start_http_server, Summary, generate_latest
-from prometheus_client import REGISTRY
+from prometheus_client import start_http_server, Summary, Counter, Gauge, Histogram, generate_latest, REGISTRY
 import os
+import time
 
 app = Flask(__name__)
 
@@ -53,7 +53,6 @@ def create_connection():
             host=os.getenv('DB_HOST'),
             port=os.getenv('DB_PORT'),
             database=os.getenv('DB_NAME')
-
         )
         return connection
     except Error as e:
@@ -105,10 +104,9 @@ def health_check():
 
 @app.route('/metrics')
 def metrics():
-    return generate_latest(REGISTRY), 200, {'Content-Type': 'text/plain'}
-
+    return Response(generate_latest(REGISTRY), mimetype='text/plain')
 
 if __name__ == '__main__':
-   # start_http_server(8000)
+    # start_http_server(8000)
+    # Run the Flask app on port 8080
     app.run(host='0.0.0.0', port=8080)
-

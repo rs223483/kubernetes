@@ -2,9 +2,48 @@ from flask import Flask, render_template, request, redirect, url_for
 import psycopg2
 from psycopg2 import sql, Error
 from prometheus_client import start_http_server, Summary, generate_latest
+from prometheus_client import REGISTRY
 import os
 
 app = Flask(__name__)
+
+# Define a Counter to track the number of requests
+REQUEST_COUNT = Counter('custom_request_count', 'Total number of requests received', ['method', 'endpoint'])
+
+# Define a Summary to track request duration
+REQUEST_LATENCY = Summary('custom_request_latency_seconds', 'Time spent processing request', ['method', 'endpoint'])
+
+# Define a Gauge to track in-progress requests
+IN_PROGRESS = Gauge('custom_in_progress_requests', 'Number of requests in progress')
+
+# Define a Histogram to track request duration with custom buckets
+REQUEST_LATENCY_HISTOGRAM = Histogram(
+    'custom_request_latency_histogram_seconds',
+    'Request latency histogram',
+    ['method', 'endpoint'],
+    buckets=[0.1, 0.5, 1.0, 2.0, 5.0]
+)
+
+# Decorator to track custom metrics for each request
+@app.before_request
+def start_request_metrics():
+    request.start_time = time.time()  # Track request start time
+    IN_PROGRESS.inc()  # Increment the number of in-progress requests
+
+@app.after_request
+def track_request_metrics(response):
+    # Calculate request latency
+    latency = time.time() - request.start_time
+
+    # Track request count, latency, and latency in histogram
+    REQUEST_COUNT.labels(request.method, request.path).inc()
+    REQUEST_LATENCY.labels(request.method, request.path).observe(latency)
+    REQUEST_LATENCY_HISTOGRAM.labels(request.method, request.path).observe(latency)
+
+    # Decrement in-progress requests
+    IN_PROGRESS.dec()
+
+    return response
 
 def create_connection():
     try:
@@ -70,6 +109,6 @@ def metrics():
 
 
 if __name__ == '__main__':
-    start_http_server(8000)
+   # start_http_server(8000)
     app.run(host='0.0.0.0', port=8080)
 
